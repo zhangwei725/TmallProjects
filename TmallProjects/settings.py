@@ -1,15 +1,18 @@
 import os
 
 # 项目的根目录
+import sys
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+# sys.path.insert(0, os.path.join(BASE_DIR, 'apps'))
 # 加密秘钥   用户系统    session
 SECRET_KEY = '#2c)du6f276utabqt5(zuh=(deb^c1bscc@qrw@+8#bw*%hm2x'
 
 # 开发的时候用的  上线的时候要改成False
 DEBUG = True
 # 允许所有的ip都能访问我们的服务器
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = []
 
 # 注册app
 SYS_APPS = ['django.contrib.admin',
@@ -27,7 +30,7 @@ EXT_APPS = [
 ]
 # 自定义的app
 CUSTOM_APPS = [
-    'apps.home.apps.HomeConfig',
+    'apps.home',
     'apps.account',
     'apps.search',
     'apps.cars',
@@ -66,8 +69,6 @@ TEMPLATES = [
 # 部署时候启动的对象
 WSGI_APPLICATION = 'TmallProjects.wsgi.application'
 
-# Database
-# https://docs.djangoproject.com/en/2.0/ref/settings/#databases
 # 数据配置
 DATABASES = {
     'default': {
@@ -96,7 +97,7 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 # 修改语言
-LANGUAGE_CODE = 'zh-Hans'
+LANGUAGE_CODE = 'zh-hans'
 # 设置时区
 TIME_ZONE = 'Asia/Shanghai'
 
@@ -107,6 +108,7 @@ USE_L10N = True
 USE_TZ = False
 
 STATIC_URL = '/static/'
+
 STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
 
 # 访问上传文件访问的的跟路径
@@ -135,10 +137,13 @@ CACHES = {
     #     }
     # }
 }
+
 # 设置 redis存储session
 SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
 SESSION_CACHE_ALIAS = 'default'
 
 # 用户认证相关的
+# AUTH_USER_MODEL = 'home.User'
+
 # 邮件的相关的配置
 # session默认相关的配置
