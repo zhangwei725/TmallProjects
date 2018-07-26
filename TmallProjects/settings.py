@@ -141,6 +141,7 @@ CACHES = {
 # 设置 redis存储session
 SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
 SESSION_CACHE_ALIAS = 'default'
+LOGIN_URL = '/account/login/'
 
 # 用户认证相关的
 # AUTH_USER_MODEL = 'home.User'

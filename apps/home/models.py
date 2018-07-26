@@ -43,27 +43,16 @@ class ImageStorage(FileSystemStorage):
         return super()._save(image_file, content)
 
 
-class User(models.Model):
-    STATUS_CHOICES = (
-        (1, '正常'),
-        (2, '禁止'),
-    )
+class UserProfile(models.Model):
+    phone = models.CharField(max_length=11, default='110')
+    desc = models.CharField(max_length=255, null=True)
     uid = models.AutoField('用户ID', primary_key=True)
-
-    name = models.CharField('用户名', max_length=64)
-    password = models.CharField(verbose_name='用户名', max_length=64)
     icon = models.ImageField(verbose_name=u'头像', max_length=100, upload_to='upload/img/%Y%m%d',
                              default=u"apps/static/img/default.png")
-    last_login = models.DateTimeField('最后一次登录',
-                                      auto_created=True)
-    create_date = models.DateTimeField('创建时间', auto_now_add=True, max_length=1)
-    status = models.IntegerField(verbose_name='状态', choices=STATUS_CHOICES)
-
-    def __str__(self):
-        return self.name
+    user = models.OneToOneField('auth.User')
 
     class Meta:
-        db_table = 'user'
+        db_table = 'user_profile'
         verbose_name = '用户管理'
         verbose_name_plural = verbose_name
 
@@ -84,7 +73,8 @@ class Review(models.Model):
     content = models.CharField('内容', max_length=4000, )
     create_date = models.DateTimeField('创建时间', auto_now_add=True)
     shop = models.ForeignKey('Shop', models.DO_NOTHING, db_column='shop_id', db_index=True, verbose_name="商品ID")
-    user = models.ForeignKey('User', models.DO_NOTHING, db_column='uid', db_index=True, verbose_name='用户ID')
+    user = models.ForeignKey('UserProfile', models.DO_NOTHING, db_column='uid', db_index=True,
+                             verbose_name='用户ID')
 
     class Meta:
         db_table = 'review'
@@ -113,7 +103,7 @@ class Banner(models.Model):
 class Category(models.Model):
     cate_id = models.AutoField('分类ID',
                                primary_key=True)
-    name = models.CharField('名称', max_length=255, db_index=True)
+    name = models.CharField('名称', max_length=255, unique=True)
 
     def __str__(self):
         return self.name
@@ -164,7 +154,7 @@ class Order(models.Model):
     confirm_date = models.DateTimeField('确认日期', blank=True, null=True)
     """ 1正常 0 异常, -1 删除 """
     status = models.IntegerField('订单状态', choices=ORDER_STATUS, default=1)
-    user = models.ForeignKey('User', models.DO_NOTHING, db_column='uid', verbose_name="用户ID")
+    user = models.ForeignKey('UserProfile', models.DO_NOTHING, db_column='uid', verbose_name="用户ID")
 
     def __str__(self):
         return self.order_code
@@ -204,23 +194,20 @@ class PropertyValue(models.Model):
         verbose_name_plural = verbose_name
 
 
+
 class ShopCar(models.Model):
     car_id = models.AutoField(verbose_name='ID', primary_key=True)
     number = models.IntegerField(verbose_name='商品数量', default=0)
     shop = models.ForeignKey(Shop, models.DO_NOTHING, verbose_name='商品ID')
-    user = models.ForeignKey('User', models.DO_NOTHING, db_column='uid', verbose_name='用户ID')
+    user = models.ForeignKey('UserProfile', models.DO_NOTHING, db_column='uid', verbose_name='用户ID')
     order = models.ForeignKey('Order', on_delete=models.SET_NULL, db_column='oid', null=True, verbose_name='商品ID')
     # 1正常 -1 删除 ,0 禁止 2
     status = models.IntegerField(default=1)
 
-    def __str__(self):
-        return self.shop.name
-
-
-class Meta:
-    db_table = 'shop_car'
-    verbose_name = '购物车'
-    verbose_name_plural = verbose_name
+    class Meta:
+        db_table = 'shop_car'
+        verbose_name = '购物车'
+        verbose_name_plural = verbose_name
 
 
 class ShopImage(models.Model):

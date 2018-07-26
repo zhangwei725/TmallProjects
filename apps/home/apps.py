@@ -3,4 +3,4 @@ from django.apps import AppConfig
 
 class HomeConfig(AppConfig):
     name = 'home'
-    app_label = '首页'
+    verbose_name = '首页'
